@@ -11,7 +11,7 @@ jobs:
     
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -34,7 +34,7 @@ jobs:
           cdk synth
 
       - name: Set up AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -42,13 +42,13 @@ jobs:
 
       - name: Log in to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and Push Docker Image
         run: |
           ECR_REPO="align-web"
           IMAGE_TAG="latest"
-          docker build -t $ECR_REPO:$IMAGE_TAG .
+          docker build --no-cache -t $ECR_REPO:$IMAGE_TAG .
           docker tag $ECR_REPO:$IMAGE_TAG ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/$ECR_REPO:$IMAGE_TAG
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/$ECR_REPO:$IMAGE_TAG
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
@@ -57,3 +57,9 @@ jobs:
         run: |
           cd cdk-align-web
           cdk deploy --require-approval never -c imageTag=$IMAGE_TAG
+
+      - name: Force ECS Fargate Deployment
+        run: |
+          CLUSTER_NAME=$(aws ecs list-clusters --query 'clusterArns[?contains(@, `AlignWebCluster`)]' --output text | awk -F'/' '{print $2}')
+          SERVICE_NAME=$(aws ecs list-services --cluster $CLUSTER_NAME --query 'serviceArns[?contains(@, `AlignWebFargateService`)]' --output text | awk -F'/' '{print $2}')
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment
