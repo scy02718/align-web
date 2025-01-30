@@ -47,7 +47,7 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           ECR_REPO="align-web"
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+          IMAGE_TAG="latest"
           docker build -t $ECR_REPO:$IMAGE_TAG .
           docker tag $ECR_REPO:$IMAGE_TAG ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/$ECR_REPO:$IMAGE_TAG
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-2.amazonaws.com/$ECR_REPO:$IMAGE_TAG
