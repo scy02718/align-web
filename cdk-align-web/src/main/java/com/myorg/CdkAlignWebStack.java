@@ -23,12 +23,14 @@ public class CdkAlignWebStack extends Stack {
 
         // Create an ECS Cluster (Serverless)
         Cluster cluster = Cluster.Builder.create(this, "AlignWebCluster")
+                .clusterName("AlignWebCluster")
                 .vpc(vpc)
                 .build();
 
         // Create a Fargate Service with ALB
         ApplicationLoadBalancedFargateService fargateService =
                 ApplicationLoadBalancedFargateService.Builder.create(this, "AlignWebFargateService")
+                        .serviceName("AlignWebFargateService")
                         .cluster(cluster)
                         .cpu(256) // Minimal cost (0.25 vCPU)
                         .memoryLimitMiB(512) // Minimal memory
