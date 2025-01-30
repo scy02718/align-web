@@ -13,6 +13,26 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install AWS CDK
+        run: |
+          npm install -g aws-cdk
+        
+
+      - name: Install Dependencies
+        run: |
+          cd cdk-align-web
+          mvn clean install
+
+      - name: Synthesize CDK Stack
+        run: |
+          cd cdk-align-web
+          cdk synth
+
       - name: Set up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
