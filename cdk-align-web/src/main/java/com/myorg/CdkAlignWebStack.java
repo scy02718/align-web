@@ -34,7 +34,7 @@ public class CdkAlignWebStack extends Stack {
                         .memoryLimitMiB(512) // Minimal memory
                         .desiredCount(1) // Only 1 Task Running
                         .publicLoadBalancer(true) // Expose via ALB
-                        .minHealthyPercent(0.5)
+                        .minHealthyPercent(50)
                         .taskImageOptions(ApplicationLoadBalancedTaskImageOptions.builder()
                                 .image(ContainerImage.fromEcrRepository(ecrRepo, "latest"))
                                 .containerPort(3000)
