@@ -57,3 +57,7 @@ jobs:
         run: |
           cd cdk-align-web
           cdk deploy --require-approval never -c imageTag=$IMAGE_TAG
+
+      - name: Force ECS Fargate Deployment
+        run: |
+          aws ecs update-service --cluster AlignWebCluster --service AlignWebFargateService --force-new-deployment
