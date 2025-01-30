@@ -35,7 +35,7 @@ public class CdkAlignWebStack extends Stack {
                         .desiredCount(1) // Only 1 Task Running
                         .publicLoadBalancer(true) // Expose via ALB
                         .taskImageOptions(ApplicationLoadBalancedTaskImageOptions.builder()
-                                .image(ContainerImage.fromEcrRepository(ecrRepo, "latest"))
+                                .image(ContainerImage.fromEcrRepository(ecrRepo, System.getenv("CDK_CONTEXT_IMAGE_TAG")))
                                 .containerPort(3000)
                                 .build())
                         .build();
